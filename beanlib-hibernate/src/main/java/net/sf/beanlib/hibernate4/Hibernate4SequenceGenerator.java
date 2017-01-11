@@ -23,8 +23,10 @@ import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.id.IdentifierGenerator;
 import org.hibernate.id.SequenceGenerator;
+import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.internal.SessionImpl;
+import org.hibernate.service.ServiceRegistry;
 import org.hibernate.type.LongType;
 
 /**
@@ -103,14 +105,19 @@ public class Hibernate4SequenceGenerator {
             throw new IllegalStateException("Not yet know how to handle the session factory of the given session!");
         }
         SessionFactoryImpl sessionFactoryImpl = (SessionFactoryImpl) sessionFactory;
-        Dialect dialect = sessionFactoryImpl.getDialect();
+//        Dialect dialect = sessionFactoryImpl.getDialect();
+        ServiceRegistry registry = sessionFactoryImpl.getServiceRegistry();
 
         Properties params = new Properties();
         params.setProperty("sequence", sequenceName);
 
-        SequenceGenerator sequenceGenerator = new SequenceGenerator();
-        sequenceGenerator.configure(LongType.INSTANCE, params, dialect);
+        SequenceStyleGenerator sequenceStyleGenerator = new SequenceStyleGenerator();
+        sequenceStyleGenerator.configure(LongType.INSTANCE, params, (ServiceRegistry) registry);
+        
+        
+//        SequenceGenerator sequenceGenerator = new SequenceGenerator();
+//        sequenceGenerator.configure(LongType.INSTANCE, params, dialect);
 
-        return sequenceGenerator;
+        return sequenceStyleGenerator;
     }
 }
