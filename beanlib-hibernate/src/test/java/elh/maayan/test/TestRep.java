@@ -9,6 +9,9 @@ import net.sf.beanlib.spi.PropertyFilter;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
@@ -22,9 +25,11 @@ public class TestRep extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        Configuration configuration = new Configuration().configure();
-        StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties());
-        this.sessionFactory = configuration.buildSessionFactory(builder.build());
+        // Create the SessionFactory from hibernate.cfg.xml
+        StandardServiceRegistry standardRegistry = new StandardServiceRegistryBuilder() .configure("hibernate.cfg.xml").build();
+        Metadata metadata = new MetadataSources(standardRegistry).getMetadataBuilder().build();
+        this.sessionFactory = metadata.getSessionFactoryBuilder().build();
+
         this.session = this.sessionFactory.openSession();
 
         final Supplier ms = new Supplier("Microsoft");
